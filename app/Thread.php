@@ -8,12 +8,17 @@ class Thread extends Model
 {
 	protected $guarded = [];
 
+  protected $with = ['creator', 'channel'];
     //
     protected static function boot(){
       parent::boot();
 
       static::addGlobalScope('repliesCount',function($builder){
         return $builder->withCount('replies');
+      });
+
+      static::deleting(function($thread){
+        $thread->replies()->delete();
       });
 
     }

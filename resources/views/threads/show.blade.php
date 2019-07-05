@@ -7,13 +7,23 @@
         <div class="col-md-8">
             <div class="card mb-3">                
                 <div class="card-header">
-                   <a href="{{ $thread->path() }}">{{ $thread->title }}</a>
+                    <div class="d-flex">
+                        <a href="{{ $thread->path() }}" class="flex-grow-1">{{ $thread->title }}</a>
+                        @can('update', $thread)
+                        <form action="{{ route('threads.destroy', $thread) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger">Delete Thread</button>
+                        </form>
+                        @endcan
+                    </div>
+                   
                 </div>
                 <div class="card-body">
                     {{ $thread->body }}
                 </div>            
             </div>
-       
+            
 
             @foreach($replies as $reply)
                 @include('threads.replies')
@@ -34,7 +44,7 @@
             <div class="card mb-3">                
                 <div class="card-body">
                     This thread is created {{ $thread->created_at->diffForHumans() }} by 
-                    <a href="#">{{ $thread->creator->name }}</a> with {{ $thread->replies_count }} {{str_plural('comment',$thread->replies_count)}}
+                    <a href="{{ route('profiles.show', $thread->creator) }}">{{ $thread->creator->name }}</a> with {{ $thread->replies_count }} {{str_plural('comment',$thread->replies_count)}}
                 </div>
             </div>
         </div>

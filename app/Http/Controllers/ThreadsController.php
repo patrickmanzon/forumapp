@@ -64,10 +64,9 @@ class ThreadsController extends Controller
      */
     public function show($channelId, Thread $thread)
     {   
-
         return view('threads.show', [
             "thread" => $thread,
-            "replies" => $thread->replies()->paginate(10)
+            "replies" => $thread->replies()->paginate(10),
         ]);
     }
 
@@ -101,8 +100,11 @@ class ThreadsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Thread $thread)
-    {
-        //
+    {   
+
+        $this->authorize('update', $thread);
+        $thread->delete();
+        return redirect('threads');
     }
 
     protected function filterThreads($channel, $filter)
@@ -112,7 +114,7 @@ class ThreadsController extends Controller
         if($channel->exists){
             $threads = $threads->where("channel_id", $channel->id);
         }
-        return $threads->latest()->get();
+        return $threads->latest()->paginate(10);
     }
     
 }
