@@ -10,14 +10,27 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
+    <script>
+        window.App = {
+            user: {!! auth()->user() ?? "null" !!},
+            signedIn: {!! Auth::user() ?? "null" !!}
+        }
+    </script>
     <script src="{{ asset('js/app.js') }}" defer></script>
+    
 
     <!-- Fonts -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
@@ -26,6 +39,8 @@
         <main class="py-4">
             @yield('content')
         </main>
+
+        <flash message="{{ session('flash') }}"></flash>
     </div>
 </body>
 </html>

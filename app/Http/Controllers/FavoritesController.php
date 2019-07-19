@@ -14,8 +14,16 @@ class FavoritesController extends Controller
     }
 
     public function store(Reply $reply){
-    	$reply->favorite(auth()->id());
+    	$reply->favorite(auth()->id());	
+
+    	if(request()->wantsJson()) return;
 
     	return back();
+    }
+
+    public function destroy(Reply $reply){
+    	$reply->unfavorite(auth()->id());
+		if(request()->wantsJson()) return;
+		return back();
     }
 }

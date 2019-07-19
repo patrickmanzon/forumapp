@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 use App\Filters\ThreadsFilter;
 class ThreadsController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth')->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -52,7 +57,7 @@ class ThreadsController extends Controller
             "body" => $request->body,
         ]); 
 
-        return redirect($thread->path());
+        return redirect($thread->path())->with('flash', 'Thread created.');
 
     }
 

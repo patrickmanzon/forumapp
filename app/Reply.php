@@ -6,29 +6,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reply extends Model
 {
-    //
+    
+    use RecordsActivity, Favoritable;
+
     protected $guarded = [];
     protected $with = ['owner', 'favorites'];
     protected $withCount = ['favorites'];
+    protected $appends = ["isFavorited"];
 
     public function owner()
     {
     	return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function favorites()
+
+    public function thread()
     {
-    	return $this->morphMany(Favorite::class, 'favorited');
+        return $this->belongsTo(Thread::class);
     }
 
-    public function favorite($user_id){
-    	$attribute = ['user_id' => $user_id];
-    	
-    	if($this->favorites()->where($attribute)->exists()) {
-    		return $this->favorites()->where($attribute)->delete();
-    	};
 
-    	return $this->favorites()->create($attribute);
-    }
-    
+    public function path()
+    {
+        return $this->thread->path().'#reply-'.$this->id; 
+    }    
 }

@@ -24,12 +24,19 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/threads/{channel}/{thread}', 'ThreadsController@show')->name('threads.show');
 Route::get('/threads/create', 'ThreadsController@create')->name('threads.create');
 Route::post('/threads/store', 'ThreadsController@store')->name('threads.store');
+
 Route::post('/threads/{channel}/{thread}/replies', 'RepliesController@store')->name('replies.store');
+Route::get('/threads/{channel}/{thread}/replies', 'RepliesController@index')->name('replies.index');
+
 Route::get('/threads/{channel}', 'ThreadsController@index')->name('threads.index');
 Route::get('/threads', 'ThreadsController@index')->name('threads.index');
 Route::delete('/threads/{thread}', 'ThreadsController@destroy')->name('threads.destroy');
 
-Route::post('/replies/{reply}/favorites', 'FavoritesController@store')->name('replies.favorites.store');
+Route::post('/favorites/{reply}', 'FavoritesController@store')->name('replies.favorites.store');
+Route::delete('/favorites/{reply}', 'FavoritesController@destroy')->name('replies.favorites.store');
+
+Route::patch('/replies/{reply}', 'RepliesController@update')->name('replies.update');
+Route::delete('/replies/{reply}', 'RepliesController@destroy')->name('replies.delete');
 
 Route::get('/profiles/{user}', 'ProfilesController@show')->name('profiles.show');
 

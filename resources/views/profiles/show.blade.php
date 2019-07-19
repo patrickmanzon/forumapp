@@ -7,8 +7,16 @@
     </div>
     <div class="row">
         <div class="col-md-8">
-        @foreach($threads as $thread)
-            <div class="card mb-3">                
+        @foreach($activities as $date => $activity)
+            <div class="pb-2 mt-4 mb-2 border-bottom">
+                <h4><small class="text-muted small">{{ $date }}</small></h4>
+            </div>
+            @foreach($activity as $act)
+                @if(view()->exists("profiles.activities.{$act->type}"))
+                    @include("profiles.activities.{$act->type}", ["subject" => $act->subject])
+                @endif
+            @endforeach
+            {{-- <div class="card mb-3">                
                 <div class="card-header">
                     <div class="d-flex justify-content-center"> 
                         <div class="flex-grow-1">
@@ -22,9 +30,8 @@
                 <div class="card-body">
                     {{ $thread->body }}
                 </div>          
-            </div>
+            </div> --}}
         @endforeach
-        {{ $threads->links() }}
         </div>
     </div> 
 </div>

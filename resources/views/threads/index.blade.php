@@ -11,7 +11,7 @@
                         <div class="flex-grow-1">
                             <a href="{{ $thread->path() }}">{{ $thread->title }}</a>
                             posted by 
-                            <a href="#">{{ $thread->creator->name }}</a>
+                            <a href="{{ route('profiles.show', $thread->creator) }}">{{ $thread->creator->name }}</a>
                         </div>
                         <div>
                             <a href="{{ $thread->path() }}">{{ $thread->replies_count }} {{ str_plural('comment', $thread->replies_count) }}</a>

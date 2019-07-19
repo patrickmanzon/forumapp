@@ -29,6 +29,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
-         \View::share('channels', Channel::all());
+
+        $channels = \Cache::remember('channels', 15000, function() {
+            return Channel::all();
+        });
+
+        \View::share('channels', $channels);
     }
 }

@@ -15,6 +15,7 @@ class User extends Authenticatable
      *
      * @var array
      */
+    //protected $with = ['activities'];
     protected $fillable = [
         'name', 'email', 'password',
     ];
@@ -45,6 +46,10 @@ class User extends Authenticatable
     public function getRouteKeyName()
     {
         return 'name';
+    }
+
+    public function activities(){
+        return $this->hasMany(Activity::class);
     }
 
 }
