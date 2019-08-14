@@ -38,8 +38,12 @@
             <div class="col-4">
                 <div class="card mb-3">                
                     <div class="card-body">
-                        This thread is created {{ $thread->created_at->diffForHumans() }} by 
+                        <p>This thread is created {{ $thread->created_at->diffForHumans() }} by 
                         <a href="{{ route('profiles.show', $thread->creator) }}">{{ $thread->creator->name }}</a> with <span v-text = "repCount"></span> comments{{-- {{ $thread->replies_count }} --}} {{-- {{str_plural('comment',$thread->replies_count)}} --}}
+                        </p>
+                        <p>
+                            <subscribe-button :active="@json($thread->isSubscribeTo)"></subscribe-button>
+                        </p>
                     </div>
                 </div>
             </div>

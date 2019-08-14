@@ -31,6 +31,7 @@
 					//console.log(res.data)
 					this.$emit("created", res.data)
 					//window.events.$emit("added", res.data)
+					window.scrollTo(0, 0)
 				})
 			}
 		},
