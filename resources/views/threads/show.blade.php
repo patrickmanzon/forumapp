@@ -8,7 +8,9 @@
                 <div class="card mb-3">                
                     <div class="card-header">
                         <div class="d-flex">
-                            <a href="{{ $thread->path() }}" class="flex-grow-1">{{ $thread->title }}</a>
+                            <a href="{{ $thread->path() }}" class="flex-grow-1">
+                                    {{ $thread->title }}
+                            </a>
                             @can('update', $thread)
                             <form action="{{ route('threads.destroy', $thread) }}" method="POST">
                                 @csrf

@@ -1765,18 +1765,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['message'],
   data: function data() {
     return {
       body: '',
-      show: false
+      show: false,
+      alert: 'success'
     };
   },
   methods: {
-    flash: function flash(message) {
-      this.body = message;
+    flash: function flash(data) {
+      this.body = data.message;
+      this.alert = data.alert;
       this.show = true;
       this.hide();
     },
@@ -1791,8 +1792,8 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this2 = this;
 
-    window.events.$on('flash', function (message) {
-      _this2.flash(message);
+    window.events.$on('flash', function (data) {
+      _this2.flash(data);
     });
   },
   created: function created() {
@@ -1842,13 +1843,15 @@ __webpack_require__.r(__webpack_exports__);
       axios.post(window.location.pathname + "/replies", {
         body: this.body
       }).then(function (res) {
-        flash("Reply created.");
+        flash("Reply created.", 'success');
         _this.body = ''; //console.log(res.data)
 
         _this.$emit("created", res.data); //window.events.$emit("added", res.data)
 
 
         window.scrollTo(0, 0);
+      })["catch"](function (err) {
+        flash(err.response.data, "danger");
       });
     }
   },
@@ -2056,9 +2059,10 @@ __webpack_require__.r(__webpack_exports__);
         axios.patch("/replies/" + this.data.id, {
           body: this.body
         }).then(function (res) {
-          console.log(res);
           _this.updating = false;
           flash(res.data.message);
+        })["catch"](function (err) {
+          flash(err.response.data, "danger");
         });
       }
     },
@@ -56556,11 +56560,12 @@ var render = function() {
       staticClass: "flash"
     },
     [
-      _c(
-        "div",
-        { staticClass: "alert alert-success", attrs: { role: "alert" } },
-        [_vm._v("\n      Success! " + _vm._s(_vm.body) + "\n    ")]
-      )
+      _c("div", {
+        staticClass: "alert",
+        class: "alert-" + _vm.alert,
+        attrs: { role: "alert" },
+        domProps: { textContent: _vm._s(_vm.body) }
+      })
     ]
   )
 }
@@ -69180,8 +69185,11 @@ Vue.component('user-notifications', __webpack_require__(/*! ./components/UserNot
 Vue.component('thread-show', __webpack_require__(/*! ./pages/Thread.vue */ "./resources/js/pages/Thread.vue")["default"]);
 window.events = new Vue();
 
-window.flash = function (message) {
-  window.events.$emit('flash', message);
+window.flash = function (message, alert) {
+  window.events.$emit('flash', {
+    message: message,
+    alert: alert
+  });
 };
 
 Vue.prototype.authorize = function (handler) {

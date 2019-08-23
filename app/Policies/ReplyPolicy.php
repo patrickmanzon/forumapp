@@ -40,8 +40,8 @@ class ReplyPolicy
      * @return mixed
      */
     public function create(User $user)
-    {
-        //
+    {   
+        return !$user->checkReply->ifWasJustPublished();
     }
 
     /**

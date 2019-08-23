@@ -25,13 +25,15 @@
 			addReply(){
 				axios.post(window.location.pathname + "/replies", {body: this.body})
 				.then(res => {
-					flash("Reply created.")
+					flash("Reply created.", 'success')
 
 					this.body = ''
 					//console.log(res.data)
 					this.$emit("created", res.data)
 					//window.events.$emit("added", res.data)
 					window.scrollTo(0, 0)
+				}).catch(err => {
+					flash(err.response.data, "danger")
 				})
 			}
 		},

@@ -9,7 +9,13 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-center"> 
                         <div class="flex-grow-1">
-                            <a href="{{ $thread->path() }}">{{ $thread->title }}</a>
+                            <a href="{{ $thread->path() }}">
+                                @if(auth()->check() && $thread->hasReadBy())
+                                    <strong>{{ $thread->title }}</strong>
+                                @else
+                                    {{ $thread->title }}
+                                @endif
+                            </a>
                             posted by 
                             <a href="{{ route('profiles.show', $thread->creator) }}">{{ $thread->creator->name }}</a>
                         </div>

@@ -28,9 +28,9 @@ Vue.component('thread-show', require('./pages/Thread.vue').default);
 
 window.events = new Vue()
 
-window.flash = function(message)
+window.flash = function(message, alert)
 {
-	window.events.$emit('flash', message)
+	window.events.$emit('flash', {message, alert})
 }
 
 Vue.prototype.authorize = function(handler){

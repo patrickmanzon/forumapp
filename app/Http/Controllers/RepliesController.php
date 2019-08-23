@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Thread;
 use App\Reply;
+use App\Inspections\Spam;
 
 class RepliesController extends Controller
 {
@@ -19,27 +20,42 @@ class RepliesController extends Controller
 	}
 
 	public function store($channelId, Thread $thread){
-		$this->validate(request(), [
-			"body" => "required"
-		]);
 
-		$reply = $thread->addReply([
-			"body" => request("body"),
-			"user_id" => auth()->id(), 
-		]);
+		// if(\Gate::denies('create', new Reply)){
+		// 	response("You can't reply frequently", 400);
+		// }
 
-		if(request()->wantsJson()){
-			return $reply->load('owner');
+
+		try {
+			$this->authorize('create', new Reply);
+			$this->validate(request(), [
+				"body" => "required|spamfree"
+			]);
+
+			return $reply = $thread->addReply([
+				"body" => request("body"),
+				"user_id" => auth()->id(), 
+			])->load('owner');	
+
+		} catch (\Exception $e) {
+			return response("Can't process your reply now", 400);
 		}
-
-		return back()->with('flash', 'Reply sent.');
+		
 	}
 
-	public function update(Reply $reply, Request $request)
+	public function update(Reply $reply)
 	{
-		if($reply->update(["body" => $request->body]))
-		{
-			return response(["message" => "Reply updated."]);
+		try{
+			$this->validate(request(), [
+				"body" => "required|spamfree"
+			]);
+
+			if($reply->update(["body" => request("body")]))
+			{
+				return response(["message" => "Reply updated."]);
+			}
+		}catch(\Exception $e){
+			return response("Can't make a reply right now!", 422);
 		}
 
 		return response(["message" => "Something went wrong"], 400);

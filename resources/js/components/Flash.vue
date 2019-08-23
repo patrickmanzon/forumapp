@@ -1,7 +1,6 @@
 <template>
     <div class="flash" v-show="show">
-        <div class="alert alert-success" role="alert">
-          Success! {{ body }}
+        <div class="alert" :class="'alert-'+alert" role="alert" v-text="body">
         </div>
     </div>
 </template>
@@ -12,14 +11,15 @@
         data(){
             return {
                 body: '',
-                show: false
+                show: false,
+                alert: 'success'
             }
         },
         methods: {
-            flash(message){
-                this.body = message
+            flash(data){
+                this.body = data.message
+                this.alert = data.alert
                 this.show = true
-
                 this.hide()
             },
             hide(){
@@ -29,8 +29,9 @@
             }
         },
         mounted() {
-            window.events.$on('flash', (message) => {
-                this.flash(message)
+            window.events.$on('flash', (data) => {
+                this.flash(data)
+
             })
         },
         created()

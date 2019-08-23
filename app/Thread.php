@@ -45,11 +45,17 @@ class Thread extends Model
   	
     $reply = $this->replies()->create($reply);
 
+    $this->notify($reply);
+    
+    return $reply;
+  }
+
+  public function notify($reply)
+  {
     $this->subscriptions->filter( function ($subscription) use ($reply) {
         return $subscription->user_id != $reply->user_id;
     })->each->notify($reply);
 
-    return $reply;
   }
 
   public function creator()
@@ -78,6 +84,10 @@ class Thread extends Model
     return $this->subscriptions()
             ->where("user_id", auth()->id())
             ->delete();
+  }
+
+  public function hasReadBy(){
+    return $this->updated_at > cache(auth()->user()->visitedThreadKeyCache($this));
   }
 
   public function scopeFilter($query, $filter){

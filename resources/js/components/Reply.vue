@@ -63,9 +63,11 @@
 					axios.patch("/replies/" + this.data.id, {
 						body: this.body 
 					}).then((res) => {
-						console.log(res)
 						this.updating = false
 						flash(res.data.message)
+					}).catch(err => {
+						
+						flash(err.response.data, "danger")
 					})
 				}
 			},
