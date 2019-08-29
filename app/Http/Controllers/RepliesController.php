@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\PostRequest;
 use App\Thread;
 use App\Reply;
 use App\Inspections\Spam;
@@ -19,28 +20,15 @@ class RepliesController extends Controller
 		return $thread->replies()->paginate(5);
 	}
 
-	public function store($channelId, Thread $thread){
+	public function store($channelId, Thread $thread, PostRequest $form){
 
-		// if(\Gate::denies('create', new Reply)){
-		// 	response("You can't reply frequently", 400);
-		// }
+		// $form = new PostRequest;
+		// dd($form);
 
-
-		try {
-			$this->authorize('create', new Reply);
-			$this->validate(request(), [
-				"body" => "required|spamfree"
-			]);
-
-			return $reply = $thread->addReply([
-				"body" => request("body"),
-				"user_id" => auth()->id(), 
-			])->load('owner');	
-
-		} catch (\Exception $e) {
-			return response("Can't process your reply now", 400);
-		}
-		
+		return $reply = $thread->addReply([
+			"body" => request("body"),
+			"user_id" => auth()->id(), 
+		])->load('owner');	
 	}
 
 	public function update(Reply $reply)

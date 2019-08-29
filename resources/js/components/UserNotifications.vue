@@ -26,7 +26,6 @@
 				let response = await axios.get(this.endpoint)
 				let {data} = response
 				this.notifications = data 
-				setTimeout(this.getNotifications, 5000)
 			}
 		},
 		created(){

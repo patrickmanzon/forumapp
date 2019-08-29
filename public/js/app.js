@@ -2190,9 +2190,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 response = _context.sent;
                 data = response.data;
                 this.notifications = data;
-                setTimeout(this.getNotifications, 5000);
 
-              case 6:
+              case 5:
               case "end":
                 return _context.stop();
             }
