@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Events\ThreadReceiveReply;
 
 class Thread extends Model
 {
@@ -45,18 +46,18 @@ class Thread extends Model
   	
     $reply = $this->replies()->create($reply);
 
-    $this->notify($reply);
+    event(new ThreadReceiveReply($reply));
     
     return $reply;
   }
 
-  public function notify($reply)
-  {
-    $this->subscriptions->filter( function ($subscription) use ($reply) {
-        return $subscription->user_id != $reply->user_id;
-    })->each->notify($reply);
+  // public function notify($reply)
+  // {
+  //   $this->subscriptions->filter( function ($subscription) use ($reply) {
+  //       return $subscription->user_id != $reply->user_id;
+  //   })->each->notify($reply);
 
-  }
+  // }
 
   public function creator()
   {

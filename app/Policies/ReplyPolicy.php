@@ -41,7 +41,12 @@ class ReplyPolicy
      */
     public function create(User $user)
     {   
-        return !$user->checkReply->ifWasJustPublished();
+
+        $checkReply = $user->checkReply;
+        if(!$checkReply){
+            return true;
+        }
+        return !$checkReply->ifWasJustPublished();
     }
 
     /**

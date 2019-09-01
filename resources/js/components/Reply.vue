@@ -19,13 +19,15 @@
 	       </div>
 	    </div>
 	    <div class="card-body" v-if="updating">
-	    	<div class="form-group">
-	    		<textarea class="form-control" v-model="body"></textarea>
-	    	</div>
-	    	<div class="d-flex" v-if="canUpdate">
-		    		<button class="btn btn-primary btn-sm mr-1" @click = "saveReply">Save</button>
-		    		<button class="btn btn-danger btn-sm" @click = "updating = false">Cancel</button>
-	    	</div>
+	    	<form @submit="saveReply">
+		    	<div class="form-group">
+		    		<textarea class="form-control" v-model="body" required></textarea>
+		    	</div>
+		    	<div class="d-flex" v-if="canUpdate">
+			    		<button class="btn btn-primary btn-sm mr-1" type="submit">Save</button>
+			    		<button class="btn btn-danger btn-sm" @click = "updating = false" type="button">Cancel</button>
+		    	</div>
+	    	</form>
 	    </div>
 	    <div class="card-body" v-else>
 	    	<p v-text="body"></p>
@@ -74,7 +76,7 @@
 			deleteReply(){
                 axios.delete('/replies/' + this.data.id)
                 .then(res => {
-                	flash(res.data.message)
+                	flash(res.data.message, "success")
                 	this.$emit('delete', this.data.id)
                 })
             },

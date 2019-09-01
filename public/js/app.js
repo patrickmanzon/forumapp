@@ -2035,6 +2035,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2070,7 +2072,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       axios["delete"]('/replies/' + this.data.id).then(function (res) {
-        flash(res.data.message);
+        flash(res.data.message, "success");
 
         _this2.$emit('delete', _this2.data.id);
       });
@@ -56821,54 +56823,58 @@ var render = function() {
       _vm._v(" "),
       _vm.updating
         ? _c("div", { staticClass: "card-body" }, [
-            _c("div", { staticClass: "form-group" }, [
-              _c("textarea", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.body,
-                    expression: "body"
-                  }
-                ],
-                staticClass: "form-control",
-                domProps: { value: _vm.body },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
+            _c("form", { on: { submit: _vm.saveReply } }, [
+              _c("div", { staticClass: "form-group" }, [
+                _c("textarea", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.body,
+                      expression: "body"
                     }
-                    _vm.body = $event.target.value
-                  }
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _vm.canUpdate
-              ? _c("div", { staticClass: "d-flex" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary btn-sm mr-1",
-                      on: { click: _vm.saveReply }
-                    },
-                    [_vm._v("Save")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-danger btn-sm",
-                      on: {
-                        click: function($event) {
-                          _vm.updating = false
-                        }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { required: "" },
+                  domProps: { value: _vm.body },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
                       }
-                    },
-                    [_vm._v("Cancel")]
-                  )
-                ])
-              : _vm._e()
+                      _vm.body = $event.target.value
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _vm.canUpdate
+                ? _c("div", { staticClass: "d-flex" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary btn-sm mr-1",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("Save")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-danger btn-sm",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            _vm.updating = false
+                          }
+                        }
+                      },
+                      [_vm._v("Cancel")]
+                    )
+                  ])
+                : _vm._e()
+            ])
           ])
         : _c("div", { staticClass: "card-body" }, [
             _c("p", { domProps: { textContent: _vm._s(_vm.body) } })
@@ -69936,8 +69942,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\laragon\www\forum-app\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\laragon\www\forum-app\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\forumapp\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\forumapp\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -7,11 +7,11 @@ trait RecordsActivity{
 	protected static function bootRecordsActivity()
 	{	
 
-		foreach (static::getEventsActivity() as $event) {
-			static::$event(function($model) use ($event){
-		        return $model->recordsActivity($event);
-	      	});
-		}
+		// foreach (static::getEventsActivity() as $event) {
+		// 	static::$event(function($model) use ($event){
+		//         return $model->recordsActivity($event);
+	 //      	});
+		// }
 
 		static::deleting(function($model) {
 			return $model->activities()->delete();

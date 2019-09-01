@@ -21,10 +21,6 @@ class RepliesController extends Controller
 	}
 
 	public function store($channelId, Thread $thread, PostRequest $form){
-
-		// $form = new PostRequest;
-		// dd($form);
-
 		return $reply = $thread->addReply([
 			"body" => request("body"),
 			"user_id" => auth()->id(), 
@@ -33,20 +29,15 @@ class RepliesController extends Controller
 
 	public function update(Reply $reply)
 	{
-		try{
-			$this->validate(request(), [
-				"body" => "required|spamfree"
-			]);
 
-			if($reply->update(["body" => request("body")]))
-			{
-				return response(["message" => "Reply updated."]);
-			}
-		}catch(\Exception $e){
-			return response("Can't make a reply right now!", 422);
-		}
+		$this->validate(request(), [
+			"body" => "required|spamfree"
+		]);
 
-		return response(["message" => "Something went wrong"], 400);
+		$reply->update(["body" => request("body")]);
+		
+		return response(["message" => "Reply updated."]);
+		
 	}
 
 	public function destroy(Reply $reply)
