@@ -31,6 +31,7 @@
 
 			response({data})
 			{
+				console.log(data);
 				this.items = data.data
 				this.dataSet = data
 			},

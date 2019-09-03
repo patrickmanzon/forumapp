@@ -9,7 +9,6 @@ export default{
 		deleted(index){
 			this.$emit('removed')
 			this.items = this.items.filter(d => d.id != index)
-			flash('Reply Deleted')
 		},
 		add(item)
 		{

@@ -1776,6 +1776,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     flash: function flash(data) {
+      console.log(data);
       this.body = data.message;
       this.alert = data.alert;
       this.show = true;
@@ -1962,6 +1963,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     response: function response(_ref) {
       var data = _ref.data;
+      console.log(data);
       this.items = data.data;
       this.dataSet = data;
     },
@@ -56877,7 +56879,7 @@ var render = function() {
             ])
           ])
         : _c("div", { staticClass: "card-body" }, [
-            _c("p", { domProps: { textContent: _vm._s(_vm.body) } })
+            _c("p", { domProps: { innerHTML: _vm._s(_vm.body) } })
           ]),
       _vm._v(" "),
       _c("div", { staticClass: "card-footer text-muted" }, [
@@ -69863,7 +69865,6 @@ __webpack_require__.r(__webpack_exports__);
       this.items = this.items.filter(function (d) {
         return d.id != index;
       });
-      flash('Reply Deleted');
     },
     add: function add(item) {
       this.items.push(item);
@@ -69942,8 +69943,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\forumapp\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\forumapp\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\laragon\www\forum-app\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\laragon\www\forum-app\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

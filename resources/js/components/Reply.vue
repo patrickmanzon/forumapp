@@ -30,7 +30,7 @@
 	    	</form>
 	    </div>
 	    <div class="card-body" v-else>
-	    	<p v-text="body"></p>
+	    	<p v-html="body"></p>
 	    </div>   
 	    <div class="card-footer text-muted">
 	    	<div class="d-flex" v-if="canUpdate">

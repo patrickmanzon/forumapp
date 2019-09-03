@@ -17,6 +17,7 @@
         },
         methods: {
             flash(data){
+                console.log(data);
                 this.body = data.message
                 this.alert = data.alert
                 this.show = true
