@@ -17,6 +17,7 @@
         }
     </script>
     <script src="{{ asset('js/app.js') }}" defer></script>
+
     
 
     <!-- Fonts -->
@@ -26,6 +27,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/tribute.css') }}" rel="stylesheet">
     <style>
         [v-cloak] {
             display: none;
