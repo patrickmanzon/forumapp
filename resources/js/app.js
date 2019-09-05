@@ -25,6 +25,7 @@ Vue.component('paginator', require('./components/Paginator.vue').default);
 Vue.component('user-notifications', require('./components/UserNotifications.vue').default);
 // Vue.component('reply', require('./components/Reply.vue').default);
 Vue.component('thread-show', require('./pages/Thread.vue').default);
+Vue.component('avatar-form', require('./components/AvatarForm.vue').default);
 
 window.events = new Vue()
 
