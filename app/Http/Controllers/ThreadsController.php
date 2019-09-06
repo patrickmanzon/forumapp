@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Thread;
 use App\Channel;
+use App\Trending;
 use Illuminate\Http\Request;
 use App\Filters\ThreadsFilter;
 use App\Inspections\Spam;
@@ -20,12 +21,15 @@ class ThreadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Channel $channel, ThreadsFilter $filter)
+    public function index(Channel $channel, ThreadsFilter $filter, Trending $trending)
     {
 
         $threads = $this->filterThreads($channel, $filter);
       
-        return view('threads.index', compact('threads'));
+        return view('threads.index', [
+            "threads" => $threads,
+            "trending" => $trending->get()
+        ]);
     }
 
     /**
@@ -69,12 +73,14 @@ class ThreadsController extends Controller
      * @param  \App\Thread  $thread
      * @return \Illuminate\Http\Response
      */
-    public function show($channelId, Thread $thread)
+    public function show($channelId, Thread $thread, Trending $trending)
     {   
 
         if(auth()->check()){
             auth()->user()->read($thread);
         }
+
+        $trending->push($thread);
 
         return view('threads.show', [
             "thread" => $thread,
