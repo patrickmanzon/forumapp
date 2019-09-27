@@ -17,7 +17,7 @@ class User extends Authenticatable
      */
     //protected $with = ['activities'];
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'profile_image',
     ];
 
     /**
@@ -67,6 +67,10 @@ class User extends Authenticatable
     public function checkReply()
     {
         return $this->hasOne(Reply::class)->latest();
+    }
+
+    public function getProfileImageAttribute($avatar){
+        return asset($avatar !== null ? "storage/".$avatar : "images/default.png");
     }
 
 }

@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="pb-2 mt-4 mb-2 border-bottom">
-        <h2>{{ $profile->name }} <small class="text-muted small">since {{ $profile->created_at->diffForHumans() }}</small> </h2>
+        <avatar-form :user="{{ $profile }}"></avatar-form>
     </div>
     <div class="row">
         <div class="col-md-8">
