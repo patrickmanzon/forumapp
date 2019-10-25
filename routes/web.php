@@ -23,7 +23,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/threads/{channel}/{thread}', 'ThreadsController@show')->name('threads.show');
 Route::get('/threads/create', 'ThreadsController@create')->name('threads.create');
-Route::post('/threads/store', 'ThreadsController@store')->name('threads.store');
+Route::post('/threads/store', 'ThreadsController@store')->name('threads.store')->middleware('verifiedEmail');;
 
 Route::post('/threads/{channel}/{thread}/replies', 'RepliesController@store')->name('replies.store');
 Route::get('/threads/{channel}/{thread}/replies', 'RepliesController@index')->name('replies.index');
@@ -36,11 +36,19 @@ Route::get('/threads/{channel}', 'ThreadsController@index')->name('threads.index
 Route::get('/threads', 'ThreadsController@index')->name('threads.index');
 Route::delete('/threads/{thread}', 'ThreadsController@destroy')->name('threads.destroy');
 
+Route::patch('/lock-thread/{thread}', 'LockThreadController@update')->name('lock-thread')->middleware(['admin', 'auth']);
+
+Route::delete('/lock-thread/{thread}', 'LockThreadController@destroy')->name('lock-thread')->middleware(['admin', 'auth']);
+
+
 Route::post('/favorites/{reply}', 'FavoritesController@store')->name('replies.favorites.store');
 Route::delete('/favorites/{reply}', 'FavoritesController@destroy')->name('replies.favorites.store');
 
 Route::patch('/replies/{reply}', 'RepliesController@update')->name('replies.update');
 Route::delete('/replies/{reply}', 'RepliesController@destroy')->name('replies.delete');
+
+Route::post('/best-reply/{reply}', 'BestReplyController@store')->name('best-reply');
+
 
 Route::get('/profiles/notifications', 'NotificationsController@index')->name('notifications.index');
 Route::delete('/profiles/notifications/{notifications}', 'NotificationsController@destroy')->name('notifications.delete');
@@ -49,6 +57,7 @@ Route::get('/profiles/{user}', 'ProfilesController@show')->name('profiles.show')
 
 Route::get('/api/users/', 'Api\UsersController@index')->name('api_users.index')->middleware('auth');
 Route::post('/api/users/{user}/avatar', 'Api\UserAvatarController@store')->name('avatar.store')->middleware('auth');
+Route::get('/confirmation', 'Api\VerifyUserController@index');
 
 
 

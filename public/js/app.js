@@ -1733,15 +1733,6 @@ __webpack_require__.r(__webpack_exports__);
       avatar: this.user.profile_image
     };
   },
-  computed: {
-    canUpload: function canUpload() {
-      var _this = this;
-
-      return this.authorize(function (user) {
-        return user.id === _this.user.id;
-      });
-    }
-  },
   methods: {
     avatarUpload: function avatarUpload(avatar) {
       var data = new FormData();
@@ -1853,6 +1844,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 //
 //
 //
@@ -1871,9 +1864,13 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     flash: function flash(data) {
-      console.log(data);
-      this.body = data.message;
-      this.alert = data.alert;
+      this.body = data;
+
+      if (_typeof(data) === 'object') {
+        this.body = data.message;
+        this.alert = data.alert;
+      }
+
       this.show = true;
       this.hide();
     },
@@ -1894,6 +1891,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     if (this.message) {
+      //console.log(this.message)
       this.flash(this.message);
     }
   }
@@ -2165,13 +2163,13 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     Favorite: _Favorite__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  props: ['data'],
+  props: ['reply'],
   data: function data() {
     return {
-      body: this.data.body,
+      body: this.reply.body,
       updating: false,
-      id: this.data.id,
-      signedIn: window.App.signedIn
+      id: this.reply.id,
+      isBest: this.reply.isBest
     };
   },
   methods: {
@@ -2179,11 +2177,11 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       if (this.body != "") {
-        axios.patch("/replies/" + this.data.id, {
+        axios.patch("/replies/" + this.reply.id, {
           body: this.body
         }).then(function (res) {
           _this.updating = false;
-          flash(res.data.message);
+          flash(res.data.message, 'success');
         })["catch"](function (err) {
           flash(err.response.data, "danger");
         });
@@ -2192,26 +2190,32 @@ __webpack_require__.r(__webpack_exports__);
     deleteReply: function deleteReply() {
       var _this2 = this;
 
-      axios["delete"]('/replies/' + this.data.id).then(function (res) {
+      axios["delete"]('/replies/' + this.reply.id).then(function (res) {
         flash(res.data.message, "success");
 
-        _this2.$emit('delete', _this2.data.id);
+        _this2.$emit('delete', _this2.reply.id);
+      });
+    },
+    markBest: function markBest() {
+      var _this3 = this;
+
+      axios.post('/best-reply/' + this.reply.id).then(function () {
+        window.events.$emit('mark-best-reply', _this3.reply.id);
       });
     }
   },
   computed: {
-    canUpdate: function canUpdate() {
-      var _this3 = this;
-
-      return this.authorize(function (user) {
-        return user.id === _this3.data.user_id;
-      });
-    },
     ago: function ago() {
-      return moment__WEBPACK_IMPORTED_MODULE_1___default()(this.data.created_at).fromNow();
+      return moment__WEBPACK_IMPORTED_MODULE_1___default()(this.reply.created_at).fromNow();
     }
   },
-  created: function created() {}
+  created: function created() {
+    var _this4 = this;
+
+    window.events.$on('mark-best-reply', function (id) {
+      _this4.isBest = id === _this4.reply.id;
+    });
+  }
 });
 
 /***/ }),
@@ -2354,13 +2358,19 @@ __webpack_require__.r(__webpack_exports__);
     Replies: _components_Replies_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     SubscribeButton: _components_SubscribeButton_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
-  props: ["repliesCount"],
+  props: ["thread"],
   data: function data() {
     return {
-      repCount: this.repliesCount
+      repCount: this.thread.replies_count,
+      isLocked: this.thread.is_locked
     };
   },
-  methods: {},
+  methods: {
+    lock: function lock() {
+      axios[this.isLocked ? 'delete' : 'patch']("/lock-thread/".concat(this.thread.slug));
+      this.isLocked = !this.isLocked;
+    }
+  },
   created: function created() {// window.events.$on('removed', () => {
     // 	this.repCount--
     // })
@@ -58579,8 +58589,8 @@ var render = function() {
           {
             name: "show",
             rawName: "v-show",
-            value: _vm.canUpload,
-            expression: "canUpload"
+            value: _vm.authorize("owns", _vm.user),
+            expression: "authorize('owns', user)"
           }
         ],
         attrs: { name: "avatar" },
@@ -58873,7 +58883,10 @@ var render = function() {
         return _c(
           "div",
           [
-            _c("reply", { attrs: { data: reply }, on: { delete: _vm.deleted } })
+            _c("reply", {
+              attrs: { reply: reply },
+              on: { delete: _vm.deleted }
+            })
           ],
           1
         )
@@ -58913,100 +58926,127 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "card mb-3", attrs: { id: "#reply-" + _vm.id } },
+    { class: ["card mb-3"], attrs: { id: "#reply-" + _vm.id } },
     [
-      _c("div", { staticClass: "card-header" }, [
-        _c(
-          "div",
-          { staticClass: "d-flex justify-content-center align-self-center" },
-          [
-            _c("div", { staticClass: "flex-grow-1" }, [
-              _c("a", {
-                attrs: { href: "/profiles/" + this.data.owner.name },
-                domProps: { textContent: _vm._s(this.data.owner.name) }
-              }),
-              _vm._v(" \n\t\t       said " + _vm._s(_vm.ago)),
-              _vm._v("...\n\t       ")
-            ]),
-            _vm._v(" "),
-            _vm.signedIn
-              ? _c(
-                  "div",
-                  [_c("favorite", { attrs: { favorite: this.data } })],
-                  1
-                )
-              : _c("div", [
-                  _c("span", { staticClass: "btn btn-sm btn-secondary" }, [
-                    _vm._v(_vm._s(this.data.favorites_count) + " "),
-                    _c("i", { staticClass: "fa fa-heart" })
+      _c(
+        "div",
+        { class: ["card-header", _vm.isBest ? "bg-success text-white" : ""] },
+        [
+          _c(
+            "div",
+            { staticClass: "d-flex justify-content-center align-self-center" },
+            [
+              _c("div", { staticClass: "flex-grow-1" }, [
+                _c("img", {
+                  staticClass: "mr-2",
+                  attrs: {
+                    src: _vm.reply.owner.profile_image,
+                    alt: _vm.reply.owner.name,
+                    width: "30",
+                    height: "30"
+                  }
+                }),
+                _vm._v(" "),
+                _c("a", {
+                  attrs: { href: "/profiles/" + _vm.reply.owner.name },
+                  domProps: { textContent: _vm._s(this.reply.owner.name) }
+                }),
+                _vm._v(" \n\t\t\t   said " + _vm._s(_vm.ago) + "...\n\t\t\t")
+              ]),
+              _vm._v(" "),
+              _vm.authorize("isLoggedIn")
+                ? _c(
+                    "div",
+                    [_c("favorite", { attrs: { favorite: _vm.reply } })],
+                    1
+                  )
+                : _c("div", [
+                    _c("span", { staticClass: "btn btn-sm btn-secondary" }, [
+                      _vm._v(_vm._s(_vm.reply.favorites_count) + " "),
+                      _c("i", { staticClass: "fa fa-heart" })
+                    ])
                   ])
-                ])
-          ]
-        )
-      ]),
+            ]
+          )
+        ]
+      ),
       _vm._v(" "),
       _vm.updating
         ? _c("div", { staticClass: "card-body" }, [
-            _c("form", { on: { submit: _vm.saveReply } }, [
-              _c("div", { staticClass: "form-group" }, [
-                _c("textarea", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.body,
-                      expression: "body"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: { required: "" },
-                  domProps: { value: _vm.body },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.body = $event.target.value
-                    }
+            _c(
+              "form",
+              {
+                on: {
+                  submit: function($event) {
+                    $event.preventDefault()
+                    return _vm.saveReply($event)
                   }
-                })
-              ]),
-              _vm._v(" "),
-              _vm.canUpdate
-                ? _c("div", { staticClass: "d-flex" }, [
-                    _c(
-                      "button",
+                }
+              },
+              [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("textarea", {
+                    directives: [
                       {
-                        staticClass: "btn btn-primary btn-sm mr-1",
-                        attrs: { type: "submit" }
-                      },
-                      [_vm._v("Save")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-danger btn-sm",
-                        attrs: { type: "button" },
-                        on: {
-                          click: function($event) {
-                            _vm.updating = false
-                          }
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.body,
+                        expression: "body"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { required: "" },
+                    domProps: { value: _vm.body },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
                         }
-                      },
-                      [_vm._v("Cancel")]
-                    )
-                  ])
-                : _vm._e()
-            ])
+                        _vm.body = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _vm.authorize("owns", _vm.reply)
+                  ? _c("div", { staticClass: "d-flex" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-primary btn-sm mr-1",
+                          attrs: { type: "submit" }
+                        },
+                        [_vm._v("Save")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-danger btn-sm",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              _vm.updating = false
+                            }
+                          }
+                        },
+                        [_vm._v("Cancel")]
+                      )
+                    ])
+                  : _vm._e()
+              ]
+            )
           ])
         : _c("div", { staticClass: "card-body" }, [
-            _c("p", { domProps: { innerHTML: _vm._s(_vm.body) } })
+            _c("p", {
+              staticClass: "card-text",
+              domProps: { innerHTML: _vm._s(_vm.body) }
+            })
           ]),
       _vm._v(" "),
-      _c("div", { staticClass: "card-footer text-muted" }, [
-        _vm.canUpdate
-          ? _c("div", { staticClass: "d-flex" }, [
+      _vm.authorize("owns", _vm.reply)
+        ? _c("div", { staticClass: "card-footer text-muted d-flex" }, [
+            _c("div", { staticClass: "d-flex" }, [
               _c(
                 "button",
                 {
@@ -59028,9 +59068,27 @@ var render = function() {
                 },
                 [_vm._v("delete")]
               )
-            ])
-          : _vm._e()
-      ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "flex-grow-1 d-flex justify-content-end" },
+              [
+                _c(
+                  "button",
+                  {
+                    class: [
+                      "btn",
+                      _vm.isBest ? "btn-success" : "btn-secondary"
+                    ],
+                    on: { click: _vm.markBest }
+                  },
+                  [_vm._v("Best")]
+                )
+              ]
+            )
+          ])
+        : _vm._e()
     ]
   )
 }
@@ -71362,9 +71420,12 @@ module.exports = function(module) {
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
   \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _authorization_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./authorization.js */ "./resources/js/authorization.js");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -71373,6 +71434,7 @@ module.exports = function(module) {
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -71398,9 +71460,18 @@ window.flash = function (message, alert) {
   });
 };
 
-Vue.prototype.authorize = function (handler) {
+Vue.prototype.authorize = function () {
   var user = window.App.user;
-  return user ? handler(user) : false;
+
+  for (var _len = arguments.length, handler = new Array(_len), _key = 0; _key < _len; _key++) {
+    handler[_key] = arguments[_key];
+  }
+
+  if (typeof handler[0] === 'function') {
+    return user ? handler[0](user) : false;
+  }
+
+  return _authorization_js__WEBPACK_IMPORTED_MODULE_0__["default"][handler[0]](handler[1]);
 };
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -71411,6 +71482,32 @@ Vue.prototype.authorize = function (handler) {
 
 var app = new Vue({
   el: '#app'
+});
+
+/***/ }),
+
+/***/ "./resources/js/authorization.js":
+/*!***************************************!*\
+  !*** ./resources/js/authorization.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var user = window.App.user;
+/* harmony default export */ __webpack_exports__["default"] = ({
+  owns: function owns(model) {
+    if (!user) return false;
+    return user.id === model.user_id;
+  },
+  isLoggedIn: function isLoggedIn() {
+    return !!user;
+  },
+  isAdmin: function isAdmin() {
+    if (!user) return false;
+    return user.isAdmin;
+  }
 });
 
 /***/ }),

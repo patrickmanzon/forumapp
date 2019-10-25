@@ -6,6 +6,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Carbon\Carbon;
+use App\Mail\SendVerificationCode;
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -26,7 +28,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'email',
     ];
 
     /**
@@ -37,6 +39,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public $appends = ['isAdmin'];
+
+    protected static function boot(){ 
+        parent::boot();
+    }
+
+    public function isAdmin(){
+        $admins = ['johnWick'];
+        return in_array($this->name, $admins);
+    }
+
+    public function getIsAdminAttribute(){
+        return $this->isAdmin();
+    }
 
     public function threads()
     {
@@ -71,6 +88,23 @@ class User extends Authenticatable
 
     public function getProfileImageAttribute($avatar){
         return asset($avatar !== null ? "storage/".$avatar : "images/default.png");
+    }
+
+    public function createVerificationToken()
+    {
+        $this->confirmation_token = md5($this->email);
+        $this->save();
+    }
+
+    public function sendVerificationCode()
+    {
+        return \Mail::to($this)->send(new sendVerificationCode($this));
+    }
+
+    public function verified()
+    {
+        $this->is_verified = 1;
+        $this->save();
     }
 
 }

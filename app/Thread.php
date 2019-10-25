@@ -14,6 +14,10 @@ class Thread extends Model
   protected $with = ['creator', 'channel'];
 
   protected $appends = ["isSubscribeTo"];
+
+  protected $casts = [
+    'is_locked' => 'boolean'
+  ];
     //
   protected static function boot(){
     parent::boot();
@@ -22,19 +26,23 @@ class Thread extends Model
       return $builder->withCount('replies');
     });
 
+    // static::creating(function ($thread){
+    //   $thread->createSlug();
+    // });
+
     static::deleted(function($thread){
       return $thread->replies->each->delete();
     });
 
-    // static::creating(function($thread){
-    //   dd($thread);
-    // });
+    static::created(function($thread){
+      $thread->createSlug();
+    });
 
   }
 
  	public function path(){
 
- 		return "/threads/{$this->channel->slug}/{$this->id}";
+ 		return "/threads/{$this->channel->slug}/{$this->slug}";
 
  	}
 
@@ -102,6 +110,35 @@ class Thread extends Model
     return $this->subscriptions()
             ->where("user_id", auth()->id())
             ->exists();
+  }
+
+  // public function setSlugAttribute($value)
+  // {
+  //   $this->attribute['slug'] = $this->createSlug();
+  // }
+
+  public function createSlug()
+  {
+    $slug = str_slug($this->title);
+
+    while (static::where('slug', '=', $slug)->exists()) {
+      $slug = str_slug($this->title) .'-'.$this->id;
+    }
+
+    $this->slug = $slug;
+    $this->save();
+  }
+
+  public function getRouteKeyName(){
+    return 'slug';
+  }
+
+  public function locked(){
+    $this->update(['is_locked' => true]);
+  }
+
+  public function unlocked(){
+    $this->update(['is_locked' => false]);
   }
 
 }

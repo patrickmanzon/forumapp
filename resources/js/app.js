@@ -7,6 +7,7 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+import authorization from './authorization.js'
 
 /**
  * The following block of code may be used to automatically register your
@@ -34,10 +35,13 @@ window.flash = function(message, alert)
 	window.events.$emit('flash', {message, alert})
 }
 
-Vue.prototype.authorize = function(handler){
+Vue.prototype.authorize = function(...handler){
 	let user = window.App.user;
-
-	return user ? handler(user) : false
+	if(typeof handler[0] === 'function'){
+		return user ? handler[0](user) : false
+	}
+	return authorization[handler[0]](handler[1])
+	
 }
 /**
  * Next, we will create a fresh Vue application instance and attach it to

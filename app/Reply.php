@@ -13,7 +13,7 @@ class Reply extends Model
     protected $guarded = [];
     protected $with = ['owner', 'favorites'];
     protected $withCount = ['favorites'];
-    protected $appends = ["isFavorited"];
+    protected $appends = ['isFavorited', 'isBest'];
 
     protected static function boot()
     {   
@@ -59,5 +59,18 @@ class Reply extends Model
     {   
         preg_match_all('/@([\w\-]+)/', $this->body, $matches);
         return $matches[1];
+    }
+
+    public function markBest(){
+        $this->thread->update(['best_reply' => $this->id]);
+    }
+
+    public function isBest(){
+        return $this->thread->best_reply == $this->id;
+    }
+
+    public function getIsBestAttribute()
+    {
+        return $this->isBest();
     }
 }

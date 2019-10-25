@@ -17,9 +17,11 @@
         },
         methods: {
             flash(data){
-                console.log(data);
-                this.body = data.message
-                this.alert = data.alert
+                this.body = data
+                if(typeof data === 'object'){
+                    this.body = data.message
+                    this.alert = data.alert
+                }
                 this.show = true
                 this.hide()
             },
@@ -38,6 +40,7 @@
         created()
         {
             if(this.message){
+                //console.log(this.message)
                 this.flash(this.message)
             }
         }

@@ -5,7 +5,7 @@
         	<h2 v-text="user.name" class="ml-3"> </h2>
 		</div>
 		
-		<avatar-input name="avatar" @uploaded="avatarUpload" v-show="canUpload"></avatar-input>
+		<avatar-input name="avatar" @uploaded="avatarUpload" v-show="authorize('owns', user)"></avatar-input>
         
 	</div>
 </template>
@@ -18,11 +18,6 @@
 		data(){
 			return {
 				avatar: this.user.profile_image
-			}
-		},
-		computed:{
-			canUpload() {
-				return this.authorize(user => user.id === this.user.id)
 			}
 		},
 		methods:{

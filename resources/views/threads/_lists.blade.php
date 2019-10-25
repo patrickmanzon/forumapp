@@ -20,6 +20,9 @@
         </div>
         <div class="card-body">
             {{ $thread->body }}
-        </div>          
+        </div> 
+        <div class="card-footer">
+            {{ $thread->visits }} {{ str_plural('visit',$thread->visits) }}
+        </div>         
     </div>
 @endforeach

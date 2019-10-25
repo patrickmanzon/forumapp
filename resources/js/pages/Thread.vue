@@ -8,13 +8,18 @@
 			Replies,
 			SubscribeButton
 		},
-		props: ["repliesCount"],
-		data(){
+		props: ["thread"],
+		data () {
 			return {
-				repCount: this.repliesCount
+				repCount: this.thread.replies_count,
+				isLocked: this.thread.is_locked
 			}
 		},
 		methods: {
+			lock() {
+				axios[this.isLocked ? 'delete' : 'patch'](`/lock-thread/${this.thread.slug}`);
+				this.isLocked = !this.isLocked
+			}
 		},
 		created()
 		{

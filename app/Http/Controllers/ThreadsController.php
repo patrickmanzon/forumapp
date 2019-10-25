@@ -25,7 +25,7 @@ class ThreadsController extends Controller
     {
 
         $threads = $this->filterThreads($channel, $filter);
-      
+
         return view('threads.index', [
             "threads" => $threads,
             "trending" => $trending->get()
@@ -79,6 +79,8 @@ class ThreadsController extends Controller
         if(auth()->check()){
             auth()->user()->read($thread);
         }
+
+        $thread->increment('visits');
 
         $trending->push($thread);
 
