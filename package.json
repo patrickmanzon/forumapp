@@ -24,7 +24,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "tributejs": "^3.7.3",
         "vue-tribute": "^1.0.3"
     }
